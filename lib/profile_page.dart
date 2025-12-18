@@ -42,9 +42,21 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _handleLogout() async {
-    // "logout là refesh token luôn" -> Logout func triggers refresh
-    // We will perform the refresh token action instead of logging out
-    await _handleRefreshToken();
+    setState(() => _isLoading = true);
+    try {
+      await _authService.logout();
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => LoginFormScreen(initialUsername: 'emilys')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Logout failed: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   Future<void> _handleRefreshToken() async {
@@ -65,7 +77,11 @@ class _ProfilePageState extends State<ProfilePage> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Session expired, please login again')),
           );
-          _handleLogout();
+          // session expired -> clear stored data and go to login with 'emilys' prefilled
+          await _authService.logout();
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => LoginFormScreen(initialUsername: 'emilys')),
+          );
         }
       }
     } catch (e) {

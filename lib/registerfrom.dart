@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'welcome_screen.dart';
+import 'loginform.dart';
+import 'login_green.dart';
 
 class RegisterFormScreen extends StatefulWidget {
   const RegisterFormScreen({super.key});
@@ -29,15 +32,21 @@ class _RegisterFormScreenState extends State<RegisterFormScreen> {
 
   void _handleRegister() {
     if (_formKey.currentState!.validate()) {
+      // show success and navigate to welcome screen
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Đăng ký thành công'),
           backgroundColor: Colors.green,
         ),
       );
+      // navigate to welcome screen and pass the user's full name
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => WelcomeScreen(fullName: _fullNameController.text),
+        ),
+      );
     }
   }
-
   String? _validateFullName(String? value) {
     if (value == null || value.isEmpty) {
       return 'Vui lòng nhập họ tên';
@@ -368,6 +377,21 @@ class _RegisterFormScreenState extends State<RegisterFormScreen> {
                                   SizedBox(width: 8),
                                   Icon(Icons.arrow_forward_rounded, color: Colors.white),
                                 ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          // Link to login
+                          Center(
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(builder: (_) => LoginGreenScreen()),
+                                );
+                              },
+                              child: Text(
+                                'Đã có tài khoản? Đăng nhập',
+                                style: TextStyle(color: Colors.teal.shade700, fontWeight: FontWeight.w600),
                               ),
                             ),
                           ),

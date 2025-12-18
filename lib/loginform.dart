@@ -3,7 +3,8 @@ import 'services/auth_service.dart';
 import 'profile_page.dart';
 
 class LoginFormScreen extends StatefulWidget {
-  const LoginFormScreen({super.key});
+  final String? initialUsername;
+  const LoginFormScreen({super.key, this.initialUsername});
 
   @override
   State<LoginFormScreen> createState() => _LoginFormScreenState();
@@ -20,8 +21,9 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
   void initState() {
     super.initState();
     // Pre-fill for convenience (optional, but helpful for testing)
-    // _usernameController.text = "kminchelle";
-    // _passwordController.text = "0lelplR";
+    if (widget.initialUsername != null && widget.initialUsername!.isNotEmpty) {
+      _usernameController.text = widget.initialUsername!;
+    }
   }
 
   @override

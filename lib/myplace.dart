@@ -5,39 +5,100 @@ class LakePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: myBody());
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Địa điểm'),
+        backgroundColor: Colors.deepPurple,
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _imageSection(),
+            const SizedBox(height: 16),
+            _titleSection(),
+            const SizedBox(height: 12),
+            _actionSection(context),
+            const SizedBox(height: 12),
+            _descriptionSection(),
+            const SizedBox(height: 24),
+          ],
+        ),
+      ),
+    );
   }
 
-  Widget myBody() {
-    return Column(children: [block1(), block2(), block3(), block4()]);
-  }
+  Widget _imageSection() {
+    // fixed URL (unsplash) and added errorBuilder + rounded corners
+    const src =
+        "https://images.unsplash.com/photo-1439066290691-510066268af5?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.1.0";
 
-  Widget block1() {
-    var src =
-        "https://images.unspash.com/photo-1439066290691-510066268af5?q=80&w=773&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-    return Image.network(src);
-  }
-
-  Widget block2() {
-    var namePlace = "Hồ Zurich";
-    var addressPlace = "Thuỵ Sĩ";
-    var votePlace = "41";
     return Padding(
-      padding: const EdgeInsets.all(30),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: AspectRatio(
+          aspectRatio: 16 / 9,
+          child: Image.network(
+            src,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
+                color: Colors.grey.shade200,
+                child: const Center(
+                  child: Icon(Icons.broken_image, size: 56, color: Colors.grey),
+                ),
+              );
+            },
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+              return Container(
+                color: Colors.grey.shade100,
+                child: const Center(child: CircularProgressIndicator()),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _titleSection() {
+    const namePlace = "Hồ Zurich";
+    const addressPlace = "Thụy Sĩ";
+    const votePlace = "41";
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(namePlace, style: TextStyle(fontWeight: FontWeight.bold)),
+            children: const [
+              Text(
+                namePlace,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+              ),
+              SizedBox(height: 4),
               Text(addressPlace, style: TextStyle(color: Colors.grey)),
             ],
           ),
           Row(
             children: [
-              Icon(Icons.star, color: Colors.red),
-              Text(votePlace),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.star, color: Colors.red),
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                votePlace,
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
             ],
           ),
         ],
@@ -45,42 +106,53 @@ class LakePage extends StatelessWidget {
     );
   }
 
-  Widget block3() {
-    var color = Colors.blue;
+  Widget _actionSection(BuildContext context) {
+    const color = Colors.blue;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 30),
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Column(
-            children: [
-              Icon(Icons.call, color: color),
-              Text("Call", style: TextStyle(color: color)),
-            ],
-          ),
-          Column(
-            children: [
-              Icon(Icons.route, color: color),
-              Text("Route", style: TextStyle(color: color)),
-            ],
-          ),
-          Column(
-            children: [
-              Icon(Icons.share, color: color),
-              Text("Share", style: TextStyle(color: color)),
-            ],
-          ),
+          _actionItem(icon: Icons.call, label: 'Call', color: color, onTap: () {}),
+          _actionItem(icon: Icons.route, label: 'Route', color: color, onTap: () {}),
+          _actionItem(icon: Icons.share, label: 'Share', color: color, onTap: () {}),
         ],
       ),
     );
   }
-}
 
-Widget block4() {
-  var data =
-      'Hồ Zurich nằm ở độ cao 406m, với diện tích rộng lớn, dài 40km và rộng 3km. Ở độ sâu tối đa, nó đạt đến 143 m. Nước của hồ rất sạch sẽ, dòng chảy đến từ những ngọn núi Thụy Sĩ và được sử dụng để cung cấp nước cho các thành phố xung quanh, lớn nhất trong số đó là Zurich với khoảng 360.000 cư dân.';
-  return Padding(
-    padding: const EdgeInsets.only(right: 30, left: 30),
-    child: Text(data),
-  );
+  Widget _actionItem({required IconData icon, required String label, required Color color, required VoidCallback onTap}) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: color, size: 28),
+          ),
+          const SizedBox(height: 8),
+          Text(label, style: TextStyle(color: color)),
+        ],
+      ),
+    );
+  }
+
+  Widget _descriptionSection() {
+    const data =
+        'Hồ Zurich nằm ở độ cao 406m, với diện tích rộng lớn, dài 40km và rộng 3km. Ở độ sâu tối đa, nó đạt đến 143 m. Nước của hồ rất sạch, dòng chảy đến từ những ngọn núi Thụy Sĩ và được sử dụng để cung cấp nước cho các thành phố xung quanh, lớn nhất trong số đó là Zurich với khoảng 360.000 cư dân.';
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: Text(
+        data,
+        style: const TextStyle(fontSize: 15, height: 1.5),
+        textAlign: TextAlign.justify,
+      ),
+    );
+  }
 }
